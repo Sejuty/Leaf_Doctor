@@ -8,13 +8,13 @@ A user-friendly web application built to help you identify diseases in your Pepp
 
 **[\>\> Visit the Live Application \<\<](https://leafdoctor.streamlit.app/)**
 
-## 📋 About The Project
+## About The Project
 
 Leaf Doctor uses a powerful deep learning model (MobileNetV2) to classify 15 different types of plant diseases from an uploaded leaf image. The goal is to provide a simple, accessible tool for gardeners and farmers to quickly diagnose potential issues with their plants.
 
 This application was trained on the PlantVillage dataset and is deployed for free using Streamlit Community Cloud.
 
-## ✨ Features
+##  Features
 
   * **Image Upload**: Supports JPG, JPEG, and PNG image formats.
   * **Real-Time Prediction**: Get a diagnosis in seconds.
@@ -22,13 +22,13 @@ This application was trained on the PlantVillage dataset and is deployed for fre
   * **Confidence Score**: Displays the model's confidence in its prediction.
   * **Responsive UI**: Clean and simple interface that works on desktop and mobile.
 
-## 🛠️ Technologies Used
+## Technologies Used
 
   * **Frontend**: Streamlit
   * **Backend & Model**: Python, TensorFlow, Keras, OpenCV
   * **Deployment**: Streamlit Community Cloud
 
-## 🚀 How To Run Locally
+## How To Run Locally
 
 To get a local copy up and running, follow these simple steps.
 
@@ -66,13 +66,13 @@ You need to have Python 3.8+ and pip installed on your system.
 
     Your app should now be running locally at `http://localhost:8501`.
 
-## 🧠 Model Information
+## Model Information
 
   * **Architecture**: MobileNetV2 (using transfer learning)
   * **Dataset**: [PlantVillage Dataset](https://www.kaggle.com/datasets/emmarex/plantdisease) from Kaggle.
   * **Classes**: 15 distinct classes.
   * **Validation Accuracy**: Achieved a validation accuracy of **90.51%** after 10 epochs of training.
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` file for more information.
