@@ -1,0 +1,29 @@
+# Virtualenv
+.venv/
+venv/
+
+# Dataset (downloaded via src/leafdoctor/data.py, ~658 MB)
+data/
+*.zip
+
+# Secrets — never commit these
+kaggle.json
+.kaggle/
+.env
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Training artifacts (the shipped model lives in models/ and is tracked)
+checkpoints/
+
+# macOS
+.DS_Store
