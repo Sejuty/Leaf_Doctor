@@ -1,32 +1,60 @@
+"""Leaf Doctor — Streamlit UI. All model logic lives in src/leafdoctor/inference.py."""
+
 import streamlit as st
-import tensorflow as tf
-import numpy as np
-import cv2
 
-# Load trained model
-model = tf.keras.models.load_model("plant_disease_model_15.h5")
+from leafdoctor.config import LOW_CONFIDENCE_THRESHOLD, pretty_label
+from leafdoctor.inference import InvalidImageError, decode_image, load_model, predict
 
-# Class labels
-class_names = [
-    'Pepper__bell___Bacterial_spot', 'Pepper__bell___healthy', 'Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy', 'Tomato_Bacterial_spot', 'Tomato_Early_blight', 'Tomato_Late_blight', 'Tomato_Leaf_Mold', 'Tomato_Septoria_leaf_spot', 'Tomato_Spider_mites_Two_spotted_spider_mite', 'Tomato__Target_Spot', 'Tomato__Tomato_YellowLeaf__Curl_Virus', 'Tomato__Tomato_mosaic_virus', 'Tomato_healthy'
-]
+st.set_page_config(page_title="Leaf Doctor", page_icon="🌿", layout="centered")
 
-st.title("Plant Disease Detector (15 Classes)")
-st.write("Be a doctor for your Pepper, Potato or Tomato plant!")
 
-uploaded_file = st.file_uploader("Upload a leaf image...", type=["jpg", "jpeg", "png"])
+@st.cache_resource(show_spinner="Loading model...")
+def get_model():
+    """Cached so the 9.8 MB model loads once per session rather than on every rerun."""
+    return load_model()
 
-if uploaded_file is not None:
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, 1)
-    img_resized = cv2.resize(img, (128, 128))
-    img_norm = img_resized / 255.0
-    img_input = np.expand_dims(img_norm, axis=0)
 
-    # Prediction
-    preds = model.predict(img_input)
-    label = class_names[np.argmax(preds)]
-    confidence = np.max(preds) * 100
+st.title("🌿 Leaf Doctor")
+st.write("Be a doctor for your pepper, potato or tomato plant — upload a leaf photo.")
 
-    st.image(img, channels="BGR", caption="Uploaded Image", use_container_width=True)
-    st.success(f"Prediction: {label} ({confidence:.2f}%)")
+uploaded_file = st.file_uploader("Leaf image", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is None:
+    st.info("Upload a JPG or PNG of a single leaf to get a diagnosis.")
+    st.stop()
+
+try:
+    rgb = decode_image(uploaded_file.getvalue())
+except InvalidImageError:
+    st.error("That file could not be read as an image. Try a different JPG or PNG.")
+    st.stop()
+
+st.image(rgb, caption="Uploaded image", use_container_width=True)
+
+try:
+    results = predict(get_model(), rgb, top_k=3)
+except FileNotFoundError as exc:
+    st.error(str(exc))
+    st.stop()
+except Exception as exc:  # noqa: BLE001 - surface any inference failure to the user
+    st.error(f"Prediction failed: {exc}")
+    st.stop()
+
+top_label, top_prob = results[0]
+
+if top_prob < LOW_CONFIDENCE_THRESHOLD:
+    st.warning(
+        f"Low confidence ({top_prob:.1%}). This may not be a pepper, potato or tomato "
+        "leaf — Leaf Doctor only recognises 15 specific classes."
+    )
+else:
+    st.success(f"**{pretty_label(top_label)}** — {top_prob:.1%} confidence")
+
+st.subheader("Top 3 predictions")
+for label, prob in results:
+    st.write(pretty_label(label))
+    st.progress(prob, text=f"{prob:.1%}")
+
+st.caption(
+    "For guidance only — not a substitute for professional agronomic advice."
+)
