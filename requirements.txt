@@ -1,4 +1,8 @@
-streamlit==1.49.1
-tensorflow==2.19.0
-numpy==2.0.2
-opencv-python-headless==4.12.0.88
+# Ranges rather than exact pins: Streamlit Community Cloud may run any of
+# Python 3.9-3.13, and exact pins to the Colab training versions left no
+# installable wheel on 3.13. Upper bounds still guard against a major release
+# breaking the legacy .h5 model format.
+streamlit>=1.49,<2
+tensorflow>=2.19,<3
+numpy>=2.0,<2.3
+opencv-python-headless>=4.10,<5

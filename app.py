@@ -1,9 +1,23 @@
 """Leaf Doctor — Streamlit UI. All model logic lives in src/leafdoctor/inference.py."""
 
-import streamlit as st
+import sys
+from pathlib import Path
 
-from leafdoctor.config import LOW_CONFIDENCE_THRESHOLD, pretty_label
-from leafdoctor.inference import InvalidImageError, decode_image, load_model, predict
+# Streamlit Community Cloud installs requirements.txt but never runs
+# `pip install -e .`, so make the src/ layout importable without it.
+SRC = Path(__file__).resolve().parent / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+import streamlit as st  # noqa: E402
+
+from leafdoctor.config import LOW_CONFIDENCE_THRESHOLD, pretty_label  # noqa: E402
+from leafdoctor.inference import (  # noqa: E402
+    InvalidImageError,
+    decode_image,
+    load_model,
+    predict,
+)
 
 st.set_page_config(page_title="Leaf Doctor", page_icon="🌿", layout="centered")
 
